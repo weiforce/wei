@@ -25,14 +25,14 @@ fn main() {
         let url = args[1].to_string();
 
         // 判断gdown是否安装，如果没有安装，则询问是否安装gdown
-        if run(format!("which gdown")).success() == false {
+        if run_quite(format!("which gdown")).success() == false {
             println!("gdown not installed, install it now? (y/n)");
             let mut input = String::new();
             std::io::stdin().read_line(&mut input).expect("Failed to read line");
-            println!("df");
-            dump!(input);
-            println!("df");
-            if input.trim() == "y" {
+            // 如果input包含y，则安装gdown
+            if input.contains("y") {
+                println!("Installing gdown...");
+                run(format!("pip install gdown"));
                 let _ = Command::new("pip").arg("install").arg("gdown");
             } else {
                 println!("Please install gdown first.");
@@ -46,5 +46,9 @@ fn main() {
 }
 
 fn run(command : String) -> ExitStatus {
-     Command::new("sh").arg("-c").arg(command).status().unwrap()
+    Command::new("sh").arg("-c").arg(command).status().unwrap()
+}
+
+fn run_quite(command : String) -> ExitStatus {
+    Command::new("sh").arg("-c").arg(command).output().unwrap().status
 }
