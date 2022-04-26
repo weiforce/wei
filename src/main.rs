@@ -23,33 +23,46 @@ fn main() {
     dump!(cmd);
 
     // 如果参数二包含youtube链接，则解析链接，并下载视频
-    if cmd.contains("youtube.com") {
-        run(format!("yt-dlp {}", cmd));
+    if cmd.contains("youtube.com") {// curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh > a.sh && 
+        check_install_conda("yt-dlp".to_string());
+        run_conda(format!("yt-dlp {}", cmd));
     }
 
     // 如果参数二包含drive.google.com链接，使用gdown下载
     if cmd.contains("drive.google.com") {
-        check_install("gdown","pip install gdown");
-        run(format!("gdown {}", cmd));
+        check_install_conda("gdown".to_string());
+        run_conda(format!("gdown {}", cmd));
     }
     
 }
 
+fn run_conda(cmd: String) -> ExitStatus {
+    run(format!("source ~/.miniconda/bin/activate && {}", cmd))
+}
+
+fn check_install_conda(software: String) {
+    check_install("source ~/.miniconda/bin/activate && which conda".to_string(), "sh a.sh -b -p $HOME/.miniconda".to_string());
+    check_install(
+        format!("source ~/.miniconda/bin/activate && which {}", software),
+        format!("source ~/.miniconda/bin/activate && pip install {}", software)
+    );
+}
+
 // 检测安装软件是否符合要求
-fn check_install(software: &str,install_command: &str) {
-    // 判断gdown是否安装，如果没有安装，则询问是否安装gdown
-    if run_quite(format!("which {}",software)).success() == false {
-        println!("{} not installed, install it now? (y/n)", software);
-        let mut input = String::new();
-        std::io::stdin().read_line(&mut input).expect("Failed to read line");
-        // 如果input包含y，则安装gdown
-        if input.contains("y") {
-            run(format!("{}", install_command));
-        } else {
-            println!("Please install {} first.", software);
-            // 程序退出
-            std::process::exit(1);
-        }
+fn check_install(which: String, install_command: String) {
+    // 判断gdown是否安装，如果没有安装，则询问是否安装
+    if run_quite(format!("{}",which)).success() == false {
+        // println!("{} not installed, install it now? (y/n)", software);
+        // let mut input = String::new();
+        // std::io::stdin().read_line(&mut input).expect("Failed to read line");
+        // // 如果input包含y，则安装gdown
+        // if input.contains("y") {
+        run(format!("{}", install_command));
+        // } else {
+        //     println!("Please install {} first.", software);
+        //     // 程序退出
+        //     std::process::exit(1);
+        // }
     }
 }
     
