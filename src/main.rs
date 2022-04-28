@@ -22,6 +22,19 @@ fn main() {
     let cmd = cmd.trim();
     dump!(cmd);
 
+    // 遍历当前文件夹,并打印
+    for entry in std::fs::read_dir(".").unwrap() {
+        let entry = entry.unwrap();
+        let path = entry.path();
+        println!("{}", path.display());
+    }
+    // let mut files = std::fs::read_dir(".").unwrap();
+    // dump!(files);
+
+    // if cmd.contains("build") {
+    //     run(format!("cargo {}", cmd));
+    // }
+
     // 如果包含youtube链接，则解析链接，并下载视频
     if cmd.contains("youtube.com") {
         check_install_conda("yt-dlp".to_string());
@@ -33,7 +46,6 @@ fn main() {
         check_install_conda("gdown".to_string());
         run_conda(format!("gdown {}", cmd));
     }
-    
 }
 
 fn run_conda(cmd: String) -> ExitStatus {
