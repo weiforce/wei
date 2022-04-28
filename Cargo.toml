@@ -1,9 +1,11 @@
 [package]
 name = "wei"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
+description = "Choose the best downloader and download method according to different command structure, path and website"
+license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dump = "0.1"
+#dump = "0.1"
