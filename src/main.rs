@@ -1,5 +1,5 @@
-#[macro_use]
-extern crate dump;
+//#[macro_use]
+//extern crate dump;
 
 use std::env;
 use std::process::{Command,ExitStatus};
@@ -20,7 +20,7 @@ fn main() {
         acc
     });
     let cmd = cmd.trim();
-    dump!(cmd);
+    //dump!(cmd);
 
     // 如果包含youtube链接，则解析链接，并下载视频
     if cmd.contains("youtube.com") {
