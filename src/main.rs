@@ -43,7 +43,7 @@ fn run_conda(cmd: String) -> ExitStatus {
 fn check_install_conda(software: String) { 
     check_install(
         "source ~/.miniconda/bin/activate && which conda".to_string(), 
-        "curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh > a.sh && sh a.sh -b -p $HOME/.miniconda && rm -rf a.sh".to_string()
+        "curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && sh Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/.miniconda && rm -rf Miniconda3-latest-Linux-x86_64.sh".to_string()
     );
     check_install(
         format!("source ~/.miniconda/bin/activate && which {}", software),
