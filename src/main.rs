@@ -3,6 +3,7 @@
 
 use std::env;
 use std::process::{Command,ExitStatus};
+use std::net::TcpStream;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -22,18 +23,14 @@ fn main() {
     let cmd = cmd.trim();
     //dump!(cmd);
 
-    // 遍历当前文件夹,并打印
-    for entry in std::fs::read_dir(".").unwrap() {
-        let entry = entry.unwrap();
-        let path = entry.path();
-        println!("{}", path.display());
+    if cmd.contains("pull") || cmd.contains("clone") {
+        run_git(cmd.to_string());
     }
-    // let mut files = std::fs::read_dir(".").unwrap();
-    // dump!(files);
-
-    // if cmd.contains("build") {
-    //     run(format!("cargo {}", cmd));
-    // }
+    
+    // 判断args是否zip格式文件，如果是，则解压
+    if cmd.contains(".zip") {
+        run(format!("unzip {}", cmd));
+    }
 
     // 如果包含youtube链接，则解析链接，并下载视频
     if cmd.contains("youtube.com") {
@@ -46,6 +43,29 @@ fn main() {
         check_install_conda("gdown".to_string());
         run_conda(format!("gdown {}", cmd));
     }
+}
+
+fn run_git(cmd: String) {
+    check_install("which git".to_string(), "rpm-ostree install git".to_string());
+    run(format!("git config --global http.sslVerify false"));
+    run(format!("git config --global http.postBuffer 1048576000"));
+
+    // todo 完成fastgithub 的安装
+    //run(format!("/var/home/core/下载/fastgithub_linux-x64/fastgithub &"));
+    run(format!("./fastgithub.sh"));
+        
+    // 循环 300 次,共 30 秒
+    for _ in 0..300 {
+        std::thread::sleep(std::time::Duration::from_millis(100));
+
+        if let Ok(_stream) = TcpStream::connect("127.0.0.1:38457") {
+            println!("Connected to the git proxy server!");
+            run(format!("git -c http.proxy=\"http://127.0.0.1:38457\" {}", cmd));
+            break;
+        }
+    }
+    
+    rkill_lib::kill_process_by_pid("fastgithub".to_string()).unwrap();
 }
 
 fn run_conda(cmd: String) -> ExitStatus {
@@ -74,6 +94,7 @@ fn run(command : String) -> ExitStatus {
     Command::new("sh").arg("-c").arg(command).status().unwrap()
 }
 
+// run quite 只适合不等待的程序
 fn run_quite(command : String) -> ExitStatus {
     Command::new("sh").arg("-c").arg(command).output().unwrap().status
 }
