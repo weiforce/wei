@@ -5,7 +5,9 @@ use std::env;
 use std::process::{Command,ExitStatus};
 use std::net::TcpStream;
 
-fn main() {
+use tokio;
+#[tokio::main]
+async fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 {
@@ -45,8 +47,6 @@ fn main() {
     }
 }
 
-use tokio::time::{sleep, Duration};
-#[tokio::main]
 fn run_git(cmd: String) {
     check_install("which git".to_string(), "rpm-ostree install git".to_string());
     run(format!("git config --global http.sslVerify false"));
@@ -55,10 +55,10 @@ fn run_git(cmd: String) {
     // todo 完成fastgithub 的安装
     //run(format!("/var/home/core/下载/fastgithub_linux-x64/fastgithub &"));
 
-    
+    tokio::spawn(async move {
+        run_quite(format!("./fastgithub.sh"));
+    });
 
-    run_quite(format!("./fastgithub.sh"));
-        
     // 循环 300 次,共 30 秒
     for _ in 0..300 {
         std::thread::sleep(std::time::Duration::from_millis(100));

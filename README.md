@@ -26,3 +26,5 @@
 - [ ] 自动匹配命令到对应的命令，apt install or pip install
 - [ ] 可以使用wei + 原始命令的方式运行，也可以使用wei + 参数的方式运行，可以先which 有没有这个命令，再考虑查找本地的实际情况
 - [ ] 通过全文搜索识别具体应该调用哪个命令执行
+- [ ] https://github.com/veeso/termscp ftp 地址调用termscp
+- [ ] 适应不同的系统使用apt、rpm-ostree、apk、安装软件包
