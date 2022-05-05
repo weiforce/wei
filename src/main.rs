@@ -53,11 +53,21 @@ fn run_git(cmd: String) {
     run(format!("git config --global http.postBuffer 1048576000"));
 
     // todo 完成fastgithub 的安装
-    //run(format!("/var/home/core/下载/fastgithub_linux-x64/fastgithub &"));
+    
 
+    // 影响速度的原因 run 函，在rust里面运行代码，是阻塞的。
     tokio::spawn(async move {
-        run_quite(format!("./fastgithub.sh"));
+        //run_quite(format!("./fastgithub.sh"));
+        // run_quite(format!("/var/home/core/下载/fastgithub_linux-x64/fastgithub"));
+        //run(format!("/var/home/core/下载/fastgithub_linux-x64/fastgithub &"));
+
+        // 运行命令 ls
+//        Command::new("/var/home/core/下载/fastgithub_linux-x64/fastgithub").spawn().unwrap();
     });
+
+    // 这条命令不影响速度
+    Command::new("/var/home/core/下载/fastgithub_linux-x64/fastgithub").arg("1>/dev/null").arg("2>/dev/null").spawn().unwrap();
+    //Command::new("/var/home/core/下载/fastgithub_linux-x64/fastgithub &").arg("&").spawn().unwrap();
 
     // 循环 300 次,共 30 秒
     for _ in 0..300 {
@@ -66,6 +76,12 @@ fn run_git(cmd: String) {
         if let Ok(_stream) = TcpStream::connect("127.0.0.1:38457") {
             println!("Connected to the git proxy server!");
             run(format!("git -c http.proxy=\"http://127.0.0.1:38457\" {}", cmd));
+            // Command::new("git")
+            // .arg("-c")
+            // .arg("http.proxy=\"http://127.0.0.1:38457\"")
+            // .arg("clone")
+            // .arg("https://github.com/darglein/ADOP.git")
+            // .output().unwrap();
             break;
         }
     }
